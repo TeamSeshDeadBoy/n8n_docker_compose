@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  ngrok:
+    container_name: ngrok_for_n8n
+    image: ngrok/ngrok:latest
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_TOKEN}
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    networks:
+      - network_n8n_app
+
+
+  n8n:
+    container_name: n8n_ui
+    image: docker.n8n.io/n8nio/n8n
+    environment:
+      - WEBHOOK_URL=${URL}
+    networks:
+      - network_n8n_app
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+
+networks:
+  network_n8n_app:
+    driver: bridge
